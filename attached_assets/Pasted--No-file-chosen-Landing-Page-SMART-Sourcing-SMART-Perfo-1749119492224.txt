@@ -1,0 +1,86 @@
+
+
+
+
+
+
+
+
+
+
+No file chosen
+
+
+
+🏠 Landing Page
+
+
+📊 SMART Sourcing
+
+
+🚀 SMART Performance
+
+
+📈 SMART Markets
+
+💼 SMART Sourcing
+Contract Delivery Management for AMP 8 Programme
+
+
+📊 Project Delivery Tracker
+
+
+🏢 Supplier Market Health
+
+
+📋 Contract Pipeline Planning
+
+📋 Contract Pipeline Planning
+Strategic planning for upcoming Thames Water AMP 8 contract awards
+
+Upcoming Contract Awards & Renewals
+Upcoming Awards
+
+4
+Pending Award Value
+
+£2330.0M
+High Priority Contracts
+
+2
+Regulatory Critical
+
+0
+Strategic Contract Planning & Prioritization
+ℹ️
+
+Award Timeline Planning
+ℹ️
+
+Contract Priority Hierarchy
+ℹ️
+
+Customer Affordability Impact
+IndexError: single positional indexer is out-of-bounds
+Traceback:
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/exec_code.py", line 121, in exec_func_with_error_handling
+    result = func()
+             ^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 645, in code_to_exec
+    exec(code, module.__dict__)
+File "/home/runner/workspace/app.py", line 390, in <module>
+    main()
+File "/home/runner/workspace/app.py", line 381, in main
+    smart_sourcing.render()
+File "/home/runner/workspace/modules/smart_sourcing.py", line 26, in render
+    render_contract_pipeline_tab()
+File "/home/runner/workspace/modules/smart_sourcing.py", line 482, in render_contract_pipeline_tab
+    base=top_impact.iloc[i-1]['cumulative'],
+         ~~~~~~~~~~~~~~~^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/core/indexing.py", line 1191, in __getitem__
+    return self._getitem_axis(maybe_callable, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/core/indexing.py", line 1752, in _getitem_axis
+    self._validate_integer(key, axis)
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/core/indexing.py", line 1685, in _validate_integer
+    raise IndexError("single positional indexer is out-of-bounds")

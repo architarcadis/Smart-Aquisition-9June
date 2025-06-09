@@ -1,0 +1,207 @@
+You are an expert Python developer. Your mission is to construct a sophisticated, multi-page Streamlit application named "Arcadis SMART Acquisition for Built Assets." This application will serve as a core intelligence and analytics platform for professionals managing capital programmes in the built assets and construction sector. It will emulate the structure of Arcadis's "SMART Acquisition" framework, featuring three highly integrated main modules: SMART Markets, SMART Sourcing, and SMART Performance. The application must be robust in its functionality, error handling, and user experience, with an elegant and professional visual presentation.
+
+I. Core Purpose & Value Proposition:
+
+SMART Markets: Provides strategic market intelligence through configurable, AI-augmented live web data scanning (Google Search, web crawling, OpenAI analysis). It supports both direct user exploration and contextual search triggers initiated from other modules.
+SMART Sourcing: Offers insights into controlled and accountable procurement pipelines and processes, utilizing (sample) internal data and allowing for contextual market scans.
+SMART Performance: Enables management of supplier performance and supply chain resilience, also using (sample) internal data with links to market intelligence.
+Integrated Intelligence: A key feature is the ability to "pin" insights from SMART Markets and reference them within SMART Sourcing and SMART Performance, providing external context to internal data.
+II. Core Technologies to Implement:
+
+Python: Version 3.9+
+Streamlit: For the web application framework and all UI components.
+Requests: For robust HTTP requests (web crawling, API calls).
+BeautifulSoup4 (bs4): For efficient HTML parsing.
+google-api-python-client: For Google Custom Search Engine (CSE) API interaction.
+openai: For OpenAI API (GPT models) interaction.
+Pandas: For structured data manipulation (especially for sample internal data).
+Plotly Express (plotly.express): For creating interactive, elegant, and informative charts.
+(Optional but Recommended for Sub-Tier Mapping) NetworkX: For creating and visualizing basic network graphs.
+III. Application Setup & Global Configuration:
+
+st.set_page_config():
+page_title="SMART Acquisition for Built Assets"
+page_icon=":🏗️:" (or a custom Arcadis-themed favicon if possible)
+layout="wide"
+initial_sidebar_state="expanded"
+menu_items={'Get Help': None, 'Report a bug': None, 'About': "# Arcadis SMART Acquisition for Built Assets v1.0"}
+Streamlit Theme: Apply an elegant theme. You can use a built-in one or suggest defining a config.toml for custom theming (e.g., primary color matching Arcadis branding if known, specific fonts). For simplicity, start with theme=None (Streamlit's default light theme) or suggest exploring base="light".
+Session State Initialization (st.session_state): At the very beginning of the script, initialize all necessary session state variables if they don't exist:
+st.session_state.api_openai_key = ""
+st.session_state.api_google_key = ""
+st.session_state.api_google_cx = ""
+st.session_state.sample_data_loaded = False
+st.session_state.df_market_segments = pd.DataFrame()
+st.session_state.df_competencies = pd.DataFrame()
+st.session_state.df_demand_pipeline = pd.DataFrame()
+st.session_state.df_sourcing_pipeline = pd.DataFrame()
+st.session_state.df_team_performance = pd.DataFrame()
+st.session_state.df_supplier_kpis = pd.DataFrame()
+st.session_state.df_sub_tier_map = pd.DataFrame()
+st.session_state.df_supply_chain_risks = pd.DataFrame()
+st.session_state.market_scan_config = {} (Store selections from the configuration panel)
+st.session_state.pinned_insights = [] (List of dictionaries for pinned items)
+st.session_state.contextual_trigger_data = None (To pass data when switching tabs for contextual scan)
+IV. Global Sidebar Design & Functionality:
+
+Title: st.sidebar.title("SMART Acquisition Navigator") with an appropriate icon.
+Navigation: st.sidebar.radio("Go to Module:", options=["🏠 Landing Page", "📈 SMART Markets", "📊 SMART Sourcing", "🚀 SMART Performance"])
+API Key Configuration:
+st.sidebar.subheader("API Configuration (Required for SMART Markets)")
+OpenAI API Key: st.sidebar.text_input("OpenAI API Key", type="password", key="api_openai_key_input", value=st.session_state.api_openai_key)
+Google Search API Key: st.sidebar.text_input("Google Search API Key", type="password", key="api_google_key_input", value=st.session_state.api_google_key)
+Google Search CX ID: st.sidebar.text_input("Google Search CX ID", key="api_google_cx_input", value=st.session_state.api_google_cx)
+A st.sidebar.button("Save API Keys") that updates the corresponding st.session_state variables.
+Display a persistent status message in the sidebar: st.sidebar.info("API Keys Set") or st.sidebar.warning("API Keys Missing/Incomplete").
+Sample Internal Data Generation:
+st.sidebar.subheader("Application Data")
+st.sidebar.button("Load Built Assets Sample Data"). On click:
+Call a function load_all_sample_data() that populates all the sample data DataFrames in st.session_state.
+Set st.session_state.sample_data_loaded = True.
+Display st.sidebar.success("Sample data loaded successfully!").
+If st.session_state.sample_data_loaded is true, maybe show a "Clear Sample Data" button.
+Pinned Insights Overview (Optional Sidebar Feature):
+st.sidebar.subheader("Pinned Insights Overview")
+Display len(st.session_state.pinned_insights) items pinned.
+A button st.sidebar.button("Clear All Pinned Insights") with a confirmation step.
+V. Page 1: Landing Page (🏠 Landing Page)
+
+Elegant Layout: Use st.container() and st.columns() for a balanced layout.
+Content:
+st.title("Welcome to Arcadis SMART Acquisition for Built Assets")
+st.subheader("Integrated Intelligence for Capital Programme Success")
+Informative introductory text (as detailed in previous prompts), emphasizing the three interconnected modules and their value in the built assets sector.
+Highlight API key requirements for SMART Markets and the utility of loading sample data.
+Visual: Prominently and elegantly display a simplified, professional-looking version of the SMART Acquisition © triangle diagram (consider using st.image() with a pre-designed graphic).
+Call to action: "Navigate using the sidebar to explore the modules."
+VI. Page 2: SMART Markets Tab (📈 SMART Markets)
+
+Module Focus & Layout: Strategic Market Shaping & AI-Powered Live Intelligence. Use st.tabs(["🔎 Market Scan & Intelligence", "📊 Segmentation Analysis", " EMD Demand Pipeline"]) for sub-modules.
+Tab 1: "🔎 Market Scan & Intelligence"
+Section 1.1: Market Scan Configuration Panel
+st.subheader("1. Configure Your Market Scan")
+Use st.form("market_scan_config_form").
+Inputs:
+Industry Sub-Sector(s): st.multiselect(...) (options as per previous prompt).
+Geographic Focus: st.text_input(...).
+Categories of Interest: st.multiselect(...) (options as per previous prompt).
+Additional Specific Keywords/Themes: st.text_area(...).
+Form Submit Button: submitted = st.form_submit_button("Apply Configuration & Prepare Scan").
+On submit, update st.session_state.market_scan_config and show st.success("Market scan configuration applied!").
+Section 1.2: Execute AI-Powered Market Scan
+st.subheader("2. Execute Scan & Gather Intelligence")
+Display current configuration: If st.session_state.market_scan_config is set, iterate through it and display selections in a read-only format (e.g., st.info(f"Current Geo Focus: {st.session_state.market_scan_config.get('geo_focus', 'Not Set')}")).
+Inputs for Execution:
+st.text_input("Refine Search with Additional Keywords (optional):", key="market_scan_refine_keywords")
+st.text_input("Or, Enter Specific URLs to Crawl Directly:", key="market_scan_direct_urls")
+Number of Search Results: st.slider(...)
+Crawl Depth: st.slider(...)
+st.button("🚀 Execute Market Scan", key="execute_market_scan_button")
+Intelligent Crawling Logic (on button click):
+API Key Validation: Crucial first step. If keys are missing from st.session_state, show st.error() and stop.
+Query Construction (Key for "Intelligence"):
+Define a function construct_search_queries(config, refinement_keywords):
+This function will intelligently combine selections from st.session_state.market_scan_config (Sub-Sectors, Geo, Categories, Panel Keywords) with refinement_keywords.
+Example: If config has "UK," "Infrastructure," "New Technologies," and refinement is "modular construction," a query could be "UK infrastructure new technologies modular construction". Generate a few permutations if multiple categories/sub-sectors are selected, or one very specific query. Prioritize specificity.
+If st.session_state.contextual_trigger_data is set (see Sourcing/Performance tabs), use that to override/heavily influence the query. Clear st.session_state.contextual_trigger_data after use.
+Google Search Execution: Use the constructed queries. Handle API errors (quota, invalid key) with st.error(). If no results, inform the user.
+Web Crawling (User-Provided URLs & Search Results):
+Use requests with timeouts and error handling (4xx, 5xx, connection errors). Display per-URL status.
+BeautifulSoup for text extraction: Focus on main content tags (<p>, <article>, headings), strip scripts/styles. Handle parsing errors.
+Implement politeness: time.sleep(1) between requests.
+Respect robots.txt (basic check, or advise user of this standard practice – full parsing might be too complex for V1).
+Crawl depth: If >0, extract internal links (same domain) and queue them for crawling, up to the specified depth. Avoid loops.
+OpenAI Processing: For each successfully crawled text:
+Call OpenAI API (e.g., GPT-3.5-turbo or GPT-4 if available). Handle API errors.
+Prompts for OpenAI should be carefully crafted for:
+Concise Summary (e.g., "Summarize this text in 3-5 bullet points from the perspective of a procurement professional in the built assets sector.")
+Key Entity & Theme Extraction (e.g., "Extract the following from this text, focusing on built assets: Project Names & Values, Company Names (Developers, Contractors, Suppliers), Material Types & Innovations, Construction Technologies, Regulatory Mentions, Stated Risks & Opportunities, Key Dates.") - Request output in a structured format if possible (e.g., JSON).
+Sentiment Assessment ("Assess the overall sentiment of this text regarding [topic from config/query] as Positive, Negative, or Neutral, and provide a brief justification.")
+Use a loading spinner with st.spinner("Analyzing content with AI...").
+Output Display:
+st.subheader("Scan Results & AI Insights:")
+For each processed source, use st.expander(label=f"📄 {title_or_url}"):
+st.markdown(f"[Original URL]({url})")
+st.caption("AI Summary:"), st.write(summary)
+st.caption("Key Entities & Themes:"), st.json(entities) or formatted text.
+st.caption("Sentiment:"), st.write(sentiment)
+Pinning Feature: st.button("📌 Pin this Insight", key=f"pin_{url}"). On click, add relevant details to st.session_state.pinned_insights (including scan_configuration and triggering_context). Show st.success("Insight Pinned!").
+Tab 2: "📊 Segmentation Analysis" (Uses Sample Data): (Same content as previous prompt - Treemap, Bar Chart). Ensure elegant Plotly charts with clear labels, titles, and interactive tooltips.
+Tab 3: " EMD Demand Pipeline" (Uses Sample Data): (Same content - Gantt-like chart, Table). Ensure elegant presentation.
+VII. Page 3: SMART Sourcing Tab (📊 SMART Sourcing)
+
+Module Focus & Layout: Controlled & Accountable Sourcing. Use st.tabs(["📦 Procurement Pipeline", "👥 Team Performance", "📋 Priority Planning", "💡 Pinned Market Insights"]).
+Tab 1: "📦 Procurement Pipeline" (Uses Sample Data):
+(Charts: Funnel, Bar Chart for cycle time, Table for critical activities - ensure elegance).
+Contextual Market Scan:
+If displaying pipeline items in a table or allowing selection: selected_package = st.selectbox("Select a Procurement Package for Market Scan:", options=st.session_state.df_sourcing_pipeline['package_name'].tolist()) (if data loaded).
+st.button(f"Scan Market for {selected_package}"). On click:
+package_details = st.session_state.df_sourcing_pipeline[st.session_state.df_sourcing_pipeline['package_name'] == selected_package].iloc[0]
+st.session_state.contextual_trigger_data = {'type': 'sourcing_package', 'name': selected_package, 'category': package_details['procurement_category_sample'], 'value': package_details['total_value_at_stage_sample']}
+Switch to "SMART Markets" tab (programmatically if possible, or instruct user). The "SMART Markets" tab's query construction logic should use this context.
+Tab 2: "👥 Team Performance" (Uses Sample Data): (Charts: Gauge/Indicator, Line Chart).
+Tab 3: "📋 Priority Planning" (Uses Sample Data): (Sortable st.dataframe).
+Tab 4: "💡 Pinned Market Insights":
+st.subheader("Pinned Insights from SMART Markets")
+If st.session_state.pinned_insights:
+Iterate and display each pinned item elegantly (e.g., in st.expander): title, url, summary, scan_configuration (read-only display of the config that led to this insight), triggering_context.
+Add an "Unpin" button for each.
+Else: st.info("No insights pinned yet. Explore SMART Markets to pin relevant findings.")
+VIII. Page 4: SMART Performance Tab (🚀 SMART Performance)
+
+Module Focus & Layout: Supply Chain Performance & Risk. Use st.tabs(["🏆 Supplier Scorecards", "🔗 Sub-Tier Mapping", "ρίσκο Risk Profiling", "💡 Pinned Market Insights"]).
+Tab 1: "🏆 Supplier Scorecards" (Uses Sample Data):
+(Charts: Scatter Plot, Radar Chart - ensure elegance).
+Contextual Market Scan: Similar to SMART Sourcing, allow selection of a supplier.
+selected_supplier = st.selectbox("Select Supplier for News Scan:", options=st.session_state.df_supplier_kpis['supplier_name_sample'].unique().tolist())
+st.button(f"Scan Market for {selected_supplier}"). On click:
+st.session_state.contextual_trigger_data = {'type': 'supplier_performance', 'name': selected_supplier}
+Switch/instruct to go to "SMART Markets."
+Tab 2: "🔗 Sub-Tier Mapping" (Uses Sample Data): (NetworkX/Sankey - aim for clarity).
+Tab 3: "ρίσκο Risk Profiling" (Uses Sample Data): (Charts: Heatmap, Bar Chart).
+Tab 4: "💡 Pinned Market Insights": (Same display logic as in SMART Sourcing).
+IX. Sample Internal Data Generation Details (load_all_sample_data() function):
+
+(Detailed definitions as per previous prompt, ensuring alignment with "Built Assets" and fields that support configurations, visualizations, and contextual triggers. Use realistic but fake data. Ensure date fields are datetime objects. Generate 30-50 records per DataFrame for good visualization).
+SMART Markets - Sample Data: df_market_segments, df_competencies, df_demand_pipeline. Ensure categories align with the Configuration Panel options.
+SMART Sourcing - Sample Data: df_sourcing_pipeline (ensure package_name and procurement_category_sample are suitable for keyword generation), df_team_performance.
+SMART Performance - Sample Data: df_supplier_kpis (ensure supplier_name_sample is clear), df_sub_tier_map, df_supply_chain_risks.
+X. User Experience (UX) and "Elegant Look":
+
+Layout: Consistent use of headers, subheaders. Logical flow. Use st.columns to balance elements. st.container for grouping. st.tabs for sub-sections within main modules to keep pages uncluttered.
+Visuals:
+Charts (Plotly Express): Use clear titles, axis labels, legends. Ensure good color contrast and a professional color palette. Interactive tooltips should provide useful extra information.
+Icons: Use emojis sparingly for visual cues in titles or buttons (e.g., as in the tab names above).
+White Space: Ensure sufficient padding and margins around elements for readability (Streamlit handles much of this, but st.markdown("<br>", unsafe_allow_html=True) can be used carefully if needed, or st.empty() for vertical space).
+Responsiveness: Rely on Streamlit's built-in responsiveness.
+User Feedback:
+Use st.spinner("Working...") for long operations (API calls, complex data processing).
+Clear st.success(), st.error(), st.warning(), st.info() messages for all actions.
+Guidance text if data is not loaded or configurations are missing.
+Modularity: Code should be highly modular. Define functions for:
+API calls (Google Search, OpenAI).
+Web crawling and text extraction.
+Data processing and analysis.
+Chart generation for each specific chart.
+Loading sample data.
+Constructing search queries based on configuration.
+st.cache_data and st.cache_resource: Use appropriately. For example, load_all_sample_data() could be cached. OpenAI/Google calls should generally not be cached by default if live data is always expected, unless specific conditions for re-running exact same queries are met and caching is desired for cost/speed during a session.
+XI. Robust Error Handling:
+
+API Errors: Explicit try-except blocks for googleapiclient.errors.HttpError, openai.APIError (authentication, rate limits, server errors, network issues). Display user-friendly messages like "Failed to connect to OpenAI. Check API key and network."
+Web Crawling Errors: try-except for requests.exceptions.RequestException (timeouts, DNS failures, HTTP errors). Gracefully skip problematic URLs and inform the user.
+HTML Parsing Errors: try-except during BeautifulSoup operations, though robust text extraction logic should minimize this.
+Data Errors: Handle cases where sample data might be missing or malformed (though the generation function should ensure correctness). What if no search results are found? Inform the user.
+Input Validation (Basic): E.g., for URLs, a very basic check that it looks like a URL.
+General Stability: Use try-except Exception as e: for broader function blocks to catch unexpected issues and log/display a generic error message, helping to keep the app running.
+XII. Code Structure and Best Practices:
+
+Main app.py: Should primarily handle UI layout, page navigation, and calling backend/logic functions.
+Separate Logic/Helper Files (Optional but good for larger apps): Consider if some complex functions could go into a utils.py (e.g., OpenAI call wrappers, complex data transformations). For a single Replit file, well-defined functions at the top or bottom are acceptable.
+Comments: Add clear comments explaining functions, complex logic, and data structures.
+Readability: Use f-strings for formatting, consistent variable naming, PEP 8 guidelines.
+Security: API keys MUST NOT be hardcoded. Emphasize they are entered by the user and stored in st.session_state only for the current session.
+XIII. Final Instructions:
+
+Deliver the complete Python code for this Streamlit application (app.py). The code must be robust, well-commented, directly implement all specified features (including the intelligent crawling guided by configuration/context and the elegant UI), and be ready for execution in a standard Python/Streamlit environment like Replit. Ensure that all parts of the application feel "joined-up" and contribute to a cohesive user experience for professionals in the built assets sector.
+
